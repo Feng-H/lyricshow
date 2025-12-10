@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    ports:
+      - "9090:9090"
+    environment:
+      - NODE_ENV=production
+      - JWT_SECRET=bilingual-praise-songs-jwt-secret-key-change-in-production
+    restart: unless-stopped
+    container_name: bilingual-praise-songs
+    volumes:
+      # 持久化数据目录 | Persistent data directory
+      - ./data:/app/public/data
+    labels:
+      - "com.docker.compose.project=bilingual-praise-songs"
