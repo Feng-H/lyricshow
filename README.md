@@ -39,7 +39,7 @@ docker-compose up -d
 
 3. 访问网站
 ```
-http://localhost:3000
+http://localhost:9090
 ```
 
 ### 本地开发 | Local Development
@@ -55,7 +55,7 @@ npm install
 cp ../praisesongs_data.json public/data/
 
 # 方式2：通过管理员界面上传（推荐）
-# 启动后访问 http://localhost:3000/admin
+# 启动后访问 http://localhost:9090/admin
 # 用户名：huangfeng，密码：admin123
 ```
 
@@ -66,7 +66,7 @@ npm run dev
 
 4. 访问开发环境
 ```
-http://localhost:3000
+http://localhost:9090
 ```
 
 ## 构建部署 | Build & Deploy
@@ -96,8 +96,6 @@ docker run -p 9090:9090 -v $(pwd)/data:/app/public/data bilingual-praise-songs
 网站包含管理员功能，可以在线管理数据文件：
 
 - **访问地址**: http://localhost:9090/admin
-- **用户名**: huangfeng
-- **密码**: admin123
 
 管理员可以：
 - 上传新的 JSON 数据文件
