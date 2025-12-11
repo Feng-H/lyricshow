@@ -61,13 +61,12 @@ async function validateJsonFile(fileBuffer: Buffer): Promise<{ valid: boolean; m
 }
 
 export async function POST(request: NextRequest) {
-  // Skip auth check for development
-  // if (!(await verifyAdmin(request))) {
-  //   return NextResponse.json(
-  //     { error: 'Unauthorized' },
-  //     { status: 401 }
-  //   );
-  // }
+  if (!(await verifyAdmin(request))) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
 
   try {
     const formData = await request.formData();

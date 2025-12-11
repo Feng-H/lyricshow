@@ -28,13 +28,12 @@ export async function DELETE(
   request: NextRequest,
   { params }: { params: { filename: string } }
 ) {
-  // Skip auth check for development
-  // if (!(await verifyAdmin(request))) {
-  //   return NextResponse.json(
-  //     { error: 'Unauthorized' },
-  //     { status: 401 }
-  //   );
-  // }
+  if (!(await verifyAdmin(request))) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
 
   try {
     const { filename } = params;

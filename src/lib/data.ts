@@ -4,17 +4,22 @@ import { Song, SearchIndex } from './types';
 let songsCache: { [filename: string]: Song[] } = {};
 
 // Cache for active filename
-let activeFilenameCache: string | null = null;
+let activeFilenameCache: { name: string; timestamp: number } | null = null;
+const CACHE_TTL = 5000; // 5 seconds
 
 async function getActiveFilename(): Promise<string> {
-  if (activeFilenameCache) return activeFilenameCache;
+  const now = Date.now();
+  if (activeFilenameCache && (now - activeFilenameCache.timestamp < CACHE_TTL)) {
+    return activeFilenameCache.name;
+  }
 
   try {
-    const response = await fetch('/data/config.json');
+    const response = await fetch('/data/config.json', { cache: 'no-store' });
     if (response.ok) {
       const config = await response.json();
-      activeFilenameCache = config.activeFile || 'praisesongs_data.json';
-      return activeFilenameCache!;
+      const filename = config.activeFile || 'praisesongs_data.json';
+      activeFilenameCache = { name: filename, timestamp: now };
+      return filename;
     }
   } catch (e) {
     // Ignore error, use default

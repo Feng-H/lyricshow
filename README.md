@@ -138,3 +138,23 @@ docker run -p 9090:9090 \
 - 忽略所有数据文件 (`/data/`, `/public/data/`) 以防止私有或测试数据上传
 - 忽略 `GEMINI.md` (AI 上下文文件)
 - `.gitkeep` 文件确保空目录被 Git 跟踪
+
+## 常见问题排查 | Troubleshooting
+
+### Docker 部署后无法上传或切换文件 (Permission Denied)
+
+如果遇到 "Upload failed" 或无法切换数据文件的问题，通常是因为 Docker 容器内的用户 (UID 1001) 没有主机 `./data` 目录的写入权限。
+
+**解决方法：**
+
+在主机上运行以下命令，赋予 `data` 目录写入权限：
+
+```bash
+chmod -R 777 data
+```
+
+或者，更改目录所有者为 UID 1001 (Docker 容器内的 nextjs 用户)：
+
+```bash
+sudo chown -R 1001:1001 data
+```

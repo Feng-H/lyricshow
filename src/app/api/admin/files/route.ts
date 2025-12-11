@@ -25,13 +25,12 @@ async function verifyAdmin(request: NextRequest): Promise<boolean> {
 }
 
 export async function GET(request: NextRequest) {
-  // Skip auth check for development
-  // if (!(await verifyAdmin(request))) {
-  //   return NextResponse.json(
-  //     { error: 'Unauthorized' },
-  //     { status: 401 }
-  //   );
-  // }
+  if (!(await verifyAdmin(request))) {
+    return NextResponse.json(
+      { error: 'Unauthorized' },
+      { status: 401 }
+    );
+  }
 
   try {
     // Ensure data directory exists
