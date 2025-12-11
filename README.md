@@ -79,31 +79,32 @@ http://localhost:3000
 ### 数据管理
 管理员可以：
 1. **上传文件**: 上传新的赞美诗数据 JSON 文件。
-2. **切换数据源**: 在已上传的文件列表中，点击 "Set Active" 将其设为网站当前使用的数据源。
-3. **删除文件**: 删除不再使用的历史文件（无法删除当前正在使用的文件）。
+JSON 格式如下:
 
-## 构建部署 | Build & Deploy
+///
 
-### 手动构建
-```bash
-npm run build
-npm start
-```
+[
+  {
+    "id": "1",
+    "title": "无人能像你 There is none like You",
+    "cn_lines": [
+      "无人能像你，",
+      "无人能像你"
+    ],
+    "en_lines": [
+      "There is none like You,",
+      "There is none like You."
+    ]
+  },
+  {
+    ....
+  }
+]
+///
 
-### Docker 生产环境部署
 
-```bash
-# 构建镜像
-docker build -t bilingual-praise-songs .
-
-# 运行容器
-# 注意：必须挂载 /app/public/data 目录以持久化数据和配置
-docker run -p 9090:9090 \
-  -v $(pwd)/data:/app/public/data \
-  -e ADMIN_USERNAME=your_username \
-  -e ADMIN_PASSWORD=your_password \
-  bilingual-praise-songs
-```
+1. **切换数据源**: 在已上传的文件列表中，点击 "Set Active" 将其设为网站当前使用的数据源。
+2. **删除文件**: 删除不再使用的历史文件（无法删除当前正在使用的文件）。
 
 ## 搜索功能 | Search Features
 
@@ -111,29 +112,6 @@ docker run -p 9090:9090 \
 - **歌词搜索**: 在歌词内容中搜索
 - **拼音搜索**: 输入拼音查找中文歌曲 (如 "wuren" -> "无人能像你")
 - **编号导航**: 直接输入歌曲编号跳转
-
-## 贡献 | Contributing
-
-1. Fork 项目
-2. 创建功能分支 (`git checkout -b feature/AmazingFeature`)
-3. 提交更改 (`git commit -m 'Add some AmazingFeature'`)
-4. 推送到分支 (`git push origin feature/AmazingFeature`)
-5. 打开 Pull Request
-
-## 许可证 | License
-
-本项目仅用于敬拜用途，请勿用于商业目的。
-
-## 联系 | Contact
-
-如有问题或建议，请提交 Issue: [https://github.com/Feng-H/lyricshow/issues](https://github.com/Feng-H/lyricshow/issues)
-
-## Git 仓库说明 | Git Repository Notes
-
-### .gitignore 说明
-- 忽略所有数据文件 (`/data/`, `/public/data/`) 以防止私有或测试数据上传
-- 忽略 `GEMINI.md` (AI 上下文文件)
-- `.gitkeep` 文件确保空目录被 Git 跟踪
 
 ## 常见问题排查 | Troubleshooting
 
