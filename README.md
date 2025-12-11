@@ -32,12 +32,13 @@
 1. 克隆项目
 ```bash
 git clone https://github.com/Feng-H/lyricshow.git
-cd PraiseSongLyric/website
+cd lyricshow/website
 ```
 
 2. 构建并运行
 ```bash
 docker-compose up -d
+如果异常需要重新部署,使用命令: docker-compose up -- build -d
 ```
 
 3. 访问网站
