@@ -1,6 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // Comment out output export for development with API routes
+  // Output standalone build for Docker
+  output: 'standalone',
   // output: 'export',
   trailingSlash: true,
   images: {

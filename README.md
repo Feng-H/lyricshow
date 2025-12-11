@@ -2,25 +2,28 @@
 
 一个现代化的中英文双语赞美诗歌词查询网站，支持全文搜索、拼音检索和移动端优化。
 
+[English](#features--features) | [中文](#特性--features)
+
 ## 特性 | Features
 
 - 🌟 **双语歌词** - 中英文歌词切换显示
 - 🔍 **智能搜索** - 支持中文拼音搜索和全文检索
 - 📱 **移动优化** - 完全适配手机和平板设备
-- 🐳 **Docker部署** - 一键部署，支持容器化
+- 🐳 **Docker部署** - 一键部署，支持容器化（Standalone Mode）
 - 🌙 **深色模式** - 保护眼睛的明暗主题切换
 - 📄 **打印友好** - 优化的打印样式
 - 📲 **PWA支持** - 可安装到主屏幕
-- 🔐 **管理员功能** - 支持在线上传和管理JSON数据文件
+- 🔐 **管理员功能** - 安全的管理员登录，支持在线上传、删除和切换JSON数据文件
 - 💾 **数据持久化** - 数据文件保存在服务器本地，重启不丢失
+- ⚙️ **动态配置** - 支持动态切换当前使用的歌词数据文件
 
 ## 技术栈 | Tech Stack
 
 - **框架**: Next.js 14 with App Router
 - **样式**: Tailwind CSS
 - **语言**: TypeScript
-- **部署**: Docker & Nginx
-- **搜索**: Fuse.js + Pinyin.js
+- **部署**: Docker & Nginx (Node.js Server)
+- **搜索**: Fuse.js + Custom Pinyin Matching
 
 ## 快速开始 | Quick Start
 
@@ -28,7 +31,7 @@
 
 1. 克隆项目
 ```bash
-git clone <repository-url>
+git clone https://github.com/Feng-H/PraiseSongLyric.git
 cd PraiseSongLyric/website
 ```
 
@@ -38,9 +41,8 @@ docker-compose up -d
 ```
 
 3. 访问网站
-```
-http://localhost:9090
-```
+- 前台: `http://localhost:9090`
+- 后台: `http://localhost:9090/admin`
 
 ### 本地开发 | Local Development
 
@@ -49,15 +51,9 @@ http://localhost:9090
 npm install
 ```
 
-2. 数据文件（二选一）
-```bash
-# 方式1：复制初始数据文件（仅本地开发）
-cp ../praisesongs_data.json public/data/
-
-# 方式2：通过管理员界面上传（推荐）
-# 启动后访问 http://localhost:3000/admin
-# 用户名：huangfeng，密码：admin123
-```
+2. 数据文件准备
+项目默认会在 `public/data/` 目录下查找 `praisesongs_data.json` 或 `config.json` 指定的文件。
+开发环境下，你可以手动放入一个 JSON 文件到 `public/data/`。
 
 3. 启动开发服务器
 ```bash
@@ -69,85 +65,56 @@ npm run dev
 http://localhost:3000
 ```
 
+## 管理员功能 | Admin Features
+
+访问 `/admin` 页面进行数据管理。
+
+### 默认登录凭证
+- **用户名**: `huangfeng`
+- **密码**: `admin123`
+
+### 环境变量配置
+在 `docker-compose.yml` 或环境变量中配置：
+- `ADMIN_USERNAME`: 自定义管理员用户名
+- `ADMIN_PASSWORD`: 自定义管理员密码（明文）
+- `ADMIN_PASSWORD_HASH`: 自定义管理员密码（Bcrypt Hash，更安全）
+- `JWT_SECRET`: 用于生成 Session Token 的密钥
+
+### 数据管理
+管理员可以：
+1. **上传文件**: 上传新的赞美诗数据 JSON 文件。
+2. **切换数据源**: 在已上传的文件列表中，点击 "Set Active" 将其设为网站当前使用的数据源。
+3. **删除文件**: 删除不再使用的历史文件（无法删除当前正在使用的文件）。
+
 ## 构建部署 | Build & Deploy
 
-1. 构建项目
+### 手动构建
 ```bash
 npm run build
-```
-
-2. 启动生产服务器
-```bash
 npm start
 ```
 
-### Docker 部署到生产环境 | Docker Production Deployment
+### Docker 生产环境部署
 
 ```bash
 # 构建镜像
 docker build -t bilingual-praise-songs .
 
-# 运行容器（需要挂载数据目录）
-docker run -p 9090:9090 -v $(pwd)/data:/app/public/data bilingual-praise-songs
-```
-
-### 管理员功能 | Admin Features
-
-网站包含管理员功能，可以在线管理数据文件：
-
-- **访问地址**: http://localhost:9090/admin
-
-管理员可以：
-- 上传新的 JSON 数据文件
-- 查看已上传的文件列表
-- 删除不需要的文件（主数据文件除外）
-- 文件会自动验证格式
-
-### 数据持久化 | Data Persistence
-
-- 所有数据文件保存在 `./data` 目录
-- 通过 Docker volume 挂载，容器重启后数据不会丢失
-- 可以直接在服务器上修改此目录下的文件
-
-## 项目结构 | Project Structure
-
-```
-website/
-├── src/
-│   ├── app/                 # Next.js App Router
-│   │   ├── page.tsx        # 首页
-│   │   ├── song/[id]/      # 歌曲详情页
-│   │   └── layout.tsx      # 布局
-│   ├── components/         # React组件
-│   │   ├── layout/         # 布局组件
-│   │   ├── song/           # 歌曲相关组件
-│   │   ├── search/         # 搜索组件
-│   │   ├── lyrics/         # 歌词显示组件
-│   │   └── ui/             # UI组件
-│   ├── lib/                # 工具库
-│   │   ├── data.ts         # 数据加载
-│   │   ├── types.ts        # 类型定义
-│   │   └── utils.ts        # 工具函数
-│   └── styles/             # 样式文件
-├── public/
-│   └── data/               # 歌曲数据
-├── Dockerfile              # Docker配置
-├── docker-compose.yml      # Docker Compose配置
-└── nginx.conf              # Nginx配置
+# 运行容器
+# 注意：必须挂载 /app/public/data 目录以持久化数据和配置
+docker run -p 9090:9090 \
+  -v $(pwd)/data:/app/public/data \
+  -e ADMIN_USERNAME=your_username \
+  -e ADMIN_PASSWORD=your_password \
+  bilingual-praise-songs
 ```
 
 ## 搜索功能 | Search Features
 
 - **标题搜索**: 搜索歌名
 - **歌词搜索**: 在歌词内容中搜索
-- **拼音搜索**: 输入拼音查找中文歌曲
+- **拼音搜索**: 输入拼音查找中文歌曲 (如 "wuren" -> "无人能像你")
 - **编号导航**: 直接输入歌曲编号跳转
-
-示例搜索:
-- "赞美诗" - 标题搜索
-- "wuren neng ni" - 拼音搜索《无人能像你》
-- "There is none" - 英文歌词搜索
-- "123" - 直接跳转到第123首
 
 ## 贡献 | Contributing
 
@@ -163,16 +130,11 @@ website/
 
 ## 联系 | Contact
 
-如有问题或建议，请提交 Issue。
+如有问题或建议，请提交 Issue: [https://github.com/Feng-H/PraiseSongLyric/issues](https://github.com/Feng-H/PraiseSongLyric/issues)
 
 ## Git 仓库说明 | Git Repository Notes
 
 ### .gitignore 说明
-- 已配置忽略所有数据文件（`/data/`, `/public/data/`）
-- 忽略构建输出、依赖、环境变量等敏感文件
+- 忽略所有数据文件 (`/data/`, `/public/data/`) 以防止私有或测试数据上传
+- 忽略 `GEMINI.md` (AI 上下文文件)
 - `.gitkeep` 文件确保空目录被 Git 跟踪
-
-### 提交到 GitHub 前的准备
-1. 确保没有敏感信息
-2. 数据文件不应该提交到仓库
-3. 部署后通过管理员界面上传数据文件

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SongList } from '@/components/song/SongList';
 import { SearchBar } from '@/components/search/SearchBar';
@@ -8,7 +8,7 @@ import { loadSongs, searchSongs } from '@/lib/data';
 import { Song } from '@/lib/types';
 import { Loading } from '@/components/ui/Loading';
 
-export default function Home() {
+function HomeContent() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams?.get('search') || '';
 
@@ -20,12 +20,12 @@ export default function Home() {
   useEffect(() => {
     async function fetchData() {
       try {
-        // Load songs from the default file
+        // Load songs from the default file (now dynamic based on config)
         const allSongs = await loadSongs();
         setSongs(allSongs);
 
         if (initialQuery) {
-          const results = await searchSongs(initialQuery, 50);
+          const results = await searchSongs(initialQuery);
           setFilteredSongs(results);
         } else {
           setFilteredSongs(allSongs);
@@ -108,5 +108,13 @@ export default function Home() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<Loading />}>
+      <HomeContent />
+    </Suspense>
   );
 }

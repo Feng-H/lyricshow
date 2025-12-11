@@ -5,10 +5,10 @@ import { cookies } from 'next/headers';
 
 export const dynamic = 'force-dynamic';
 
-const ADMIN_CREDENTIALS = {
-  username: 'huangfeng',
-  password: '$2a$10$rOK9QzLQKN.W5rQRG/KhO.XqZYC6BQ9h.wZqBzxE.2J7g2K1m1O7C' // admin123
-};
+// Default credentials (huangfeng / admin123)
+const DEFAULT_USERNAME = 'huangfeng';
+// Hash for 'admin123'
+const DEFAULT_PASSWORD_HASH = '$2a$10$HYNQiG80lvPvygUqh3xgre3nvyEniVfxVdZDe05h24rSfdMS6R7wa';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'bilingual-praise-songs-secret-key';
 
@@ -16,16 +16,28 @@ export async function POST(request: NextRequest) {
   try {
     const { username, password } = await request.json();
 
-    // Validate credentials
-    if (username !== ADMIN_CREDENTIALS.username) {
+    const envUsername = process.env.ADMIN_USERNAME || DEFAULT_USERNAME;
+    
+    // Validate username
+    if (username !== envUsername) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }
       );
     }
 
-    // Compare password
-    const isValidPassword = await bcrypt.compare(password, ADMIN_CREDENTIALS.password);
+    // Validate password
+    let isValidPassword = false;
+    
+    if (process.env.ADMIN_PASSWORD) {
+      // If plain text password is provided in env (simpler for deployment)
+      isValidPassword = password === process.env.ADMIN_PASSWORD;
+    } else {
+      // Fallback to hashed password (default or from env)
+      const passwordHash = process.env.ADMIN_PASSWORD_HASH || DEFAULT_PASSWORD_HASH;
+      isValidPassword = await bcrypt.compare(password, passwordHash);
+    }
+
     if (!isValidPassword) {
       return NextResponse.json(
         { error: 'Invalid credentials' },

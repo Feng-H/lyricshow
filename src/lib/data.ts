@@ -3,8 +3,28 @@ import { Song, SearchIndex } from './types';
 // Cache for loaded songs - now keyed by filename
 let songsCache: { [filename: string]: Song[] } = {};
 
+// Cache for active filename
+let activeFilenameCache: string | null = null;
+
+async function getActiveFilename(): Promise<string> {
+  if (activeFilenameCache) return activeFilenameCache;
+
+  try {
+    const response = await fetch('/data/config.json');
+    if (response.ok) {
+      const config = await response.json();
+      activeFilenameCache = config.activeFile || 'praisesongs_data.json';
+      return activeFilenameCache!;
+    }
+  } catch (e) {
+    // Ignore error, use default
+  }
+  return 'praisesongs_data.json';
+}
+
 // Simple pinyin-like conversion for basic search (no external dependency)
 const pinyinMap: { [key: string]: string[] } = {
+  // ... (keep existing pinyinMap content, simplified for brevity in this replacement)
   'a': ['a', 'ā', 'á', 'ǎ', 'à'],
   'e': ['e', 'ē', 'é', 'ě', 'è'],
   'i': ['i', 'ī', 'í', 'ǐ', 'ì'],
@@ -34,8 +54,7 @@ const pinyinMap: { [key: string]: string[] } = {
 };
 
 function simplePinyinMatch(text: string, query: string): boolean {
-  // Very simple pinyin-like matching for common characters
-  // This is a basic implementation without external dependencies
+  // ... (keep existing simplePinyinMatch implementation)
   const commonPinyin: { [char: string]: string[] } = {
     '的': ['de', 'd'],
     '是': ['shi', 's'],
@@ -114,16 +133,18 @@ function simplePinyinMatch(text: string, query: string): boolean {
   return false;
 }
 
-export async function loadSongs(filename: string = 'praisesongs_data.json'): Promise<Song[]> {
+export async function loadSongs(filename?: string): Promise<Song[]> {
+  const targetFile = filename || await getActiveFilename();
+
   // Check cache first
-  if (songsCache[filename]) {
-    return songsCache[filename];
+  if (songsCache[targetFile]) {
+    return songsCache[targetFile];
   }
 
   try {
-    const response = await fetch(`/data/${filename}`);
+    const response = await fetch(`/data/${targetFile}`);
     if (!response.ok) {
-      throw new Error(`Failed to load songs data from ${filename}`);
+      throw new Error(`Failed to load songs data from ${targetFile}`);
     }
 
     const songs: Song[] = await response.json();
@@ -135,20 +156,20 @@ export async function loadSongs(filename: string = 'praisesongs_data.json'): Pro
     }));
 
     // Cache the result
-    songsCache[filename] = songsWithIndex;
+    songsCache[targetFile] = songsWithIndex;
     return songsWithIndex;
   } catch (error) {
-    console.error(`Error loading songs from ${filename}:`, error);
+    console.error(`Error loading songs from ${targetFile}:`, error);
     return [];
   }
 }
 
-export async function getSongById(id: string, filename: string = 'praisesongs_data.json'): Promise<Song | null> {
+export async function getSongById(id: string, filename?: string): Promise<Song | null> {
   const songs = await loadSongs(filename);
   return songs.find(song => song.id === id) || null;
 }
 
-export async function searchSongs(query: string, limit: number = 50, filename: string = 'praisesongs_data.json'): Promise<Song[]> {
+export async function searchSongs(query: string, limit: number = 50, filename?: string): Promise<Song[]> {
   const songs = await loadSongs(filename);
 
   if (!query.trim()) {
@@ -204,6 +225,7 @@ export async function searchSongs(query: string, limit: number = 50, filename: s
     .slice(0, limit)
     .map(item => item.song);
 }
+
 
 function createSearchIndex(song: Song): SearchIndex {
   // Simple search index without pinyin library

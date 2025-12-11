@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Upload, FileText, Trash2, Download, LogOut, RefreshCw, AlertCircle } from 'lucide-react';
+import { Upload, FileText, Trash2, Download, LogOut, RefreshCw, AlertCircle, CheckCircle } from 'lucide-react';
 import { useDropzone } from 'react-dropzone';
 
 interface FileInfo {
@@ -16,14 +16,25 @@ interface AdminDashboardProps {
 
 export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   const [files, setFiles] = useState<FileInfo[]>([]);
+  const [activeFile, setActiveFile] = useState<string>('');
   const [loading, setLoading] = useState(true);
   const [uploading, setUploading] = useState(false);
   const [deleting, setDeleting] = useState<string | null>(null);
+  const [activating, setActivating] = useState<string | null>(null);
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null);
 
   useEffect(() => {
-    loadFiles();
+    loadData();
   }, []);
+
+  const loadData = async () => {
+    setLoading(true);
+    try {
+      await Promise.all([loadFiles(), loadConfig()]);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const loadFiles = async () => {
     try {
@@ -31,9 +42,20 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       const data = await response.json();
       setFiles(data.files || []);
     } catch (error) {
+      console.error('Failed to load files', error);
       showMessage('error', 'Failed to load files');
-    } finally {
-      setLoading(false);
+    }
+  };
+
+  const loadConfig = async () => {
+    try {
+      const response = await fetch('/api/config');
+      const data = await response.json();
+      if (data.activeFile) {
+        setActiveFile(data.activeFile);
+      }
+    } catch (error) {
+      console.error('Failed to load config', error);
     }
   };
 
@@ -85,6 +107,11 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
   });
 
   const handleDelete = async (filename: string) => {
+    if (filename === activeFile) {
+      showMessage('error', 'Cannot delete the currently active file');
+      return;
+    }
+    
     if (!confirm(`Are you sure you want to delete ${filename}?`)) return;
 
     setDeleting(filename);
@@ -105,6 +132,29 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
       showMessage('error', 'Delete failed. Please try again.');
     } finally {
       setDeleting(null);
+    }
+  };
+
+  const handleSetActive = async (filename: string) => {
+    setActivating(filename);
+    try {
+      const response = await fetch('/api/config', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ activeFile: filename }),
+      });
+
+      if (response.ok) {
+        setActiveFile(filename);
+        showMessage('success', `Active data source set to ${filename}`);
+      } else {
+        const data = await response.json();
+        showMessage('error', data.error || 'Failed to set active file');
+      }
+    } catch (error) {
+      showMessage('error', 'Failed to update configuration');
+    } finally {
+      setActivating(null);
     }
   };
 
@@ -133,7 +183,7 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
             </div>
             <div className="flex items-center space-x-4">
               <button
-                onClick={loadFiles}
+                onClick={loadData}
                 className="flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:text-gray-900 dark:hover:text-white"
               >
                 <RefreshCw className="h-4 w-4 mr-2" />
@@ -223,21 +273,42 @@ export function AdminDashboard({ onLogout }: AdminDashboardProps) {
                 {files.map((file) => (
                   <div
                     key={file.name}
-                    className="flex items-center justify-between p-4 border border-gray-200 dark:border-gray-700 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700"
+                    className={`flex items-center justify-between p-4 border rounded-lg transition-colors ${
+                      file.name === activeFile 
+                        ? 'border-primary bg-primary/5 dark:bg-primary/10' 
+                        : 'border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700'
+                    }`}
                   >
                     <div className="flex items-center space-x-4">
-                      <FileText className="h-8 w-8 text-primary" />
+                      <FileText className={`h-8 w-8 ${file.name === activeFile ? 'text-primary' : 'text-gray-400'}`} />
                       <div>
-                        <h3 className="font-medium text-gray-900 dark:text-white">
-                          {file.name}
-                        </h3>
+                        <div className="flex items-center space-x-2">
+                          <h3 className="font-medium text-gray-900 dark:text-white">
+                            {file.name}
+                          </h3>
+                          {file.name === activeFile && (
+                            <span className="px-2 py-0.5 text-xs font-medium bg-primary text-white rounded-full">
+                              Current Active
+                            </span>
+                          )}
+                        </div>
                         <p className="text-sm text-gray-500 dark:text-gray-400">
                           {formatFileSize(file.size)} • {formatDate(file.modified)}
                         </p>
                       </div>
                     </div>
                     <div className="flex items-center space-x-2">
-                      {file.name !== 'praisesongs_data.json' && (
+                      {file.name !== activeFile && (
+                        <button
+                          onClick={() => handleSetActive(file.name)}
+                          disabled={activating === file.name}
+                          className="px-3 py-1 text-sm text-primary hover:bg-primary/10 rounded-md transition-colors disabled:opacity-50"
+                        >
+                          {activating === file.name ? 'Setting...' : 'Set Active'}
+                        </button>
+                      )}
+                      
+                      {file.name !== 'praisesongs_data.json' && file.name !== activeFile && (
                         <button
                           onClick={() => handleDelete(file.name)}
                           disabled={deleting === file.name}
