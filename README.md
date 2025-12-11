@@ -31,7 +31,7 @@
 
 1. 克隆项目
 ```bash
-git clone https://github.com/Feng-H/PraiseSongLyric.git
+git clone https://github.com/Feng-H/lyricshow.git
 cd PraiseSongLyric/website
 ```
 
@@ -68,10 +68,6 @@ http://localhost:3000
 ## 管理员功能 | Admin Features
 
 访问 `/admin` 页面进行数据管理。
-
-### 默认登录凭证
-- **用户名**: `huangfeng`
-- **密码**: `admin123`
 
 ### 环境变量配置
 在 `docker-compose.yml` 或环境变量中配置：
@@ -130,7 +126,7 @@ docker run -p 9090:9090 \
 
 ## 联系 | Contact
 
-如有问题或建议，请提交 Issue: [https://github.com/Feng-H/PraiseSongLyric/issues](https://github.com/Feng-H/PraiseSongLyric/issues)
+如有问题或建议，请提交 Issue: [https://github.com/Feng-H/lyricshow/issues](https://github.com/Feng-H/lyricshow/issues)
 
 ## Git 仓库说明 | Git Repository Notes
 

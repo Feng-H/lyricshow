@@ -10,6 +10,7 @@ const CACHE_TTL = 5000; // 5 seconds
 async function getActiveFilename(): Promise<string> {
   const now = Date.now();
   if (activeFilenameCache && (now - activeFilenameCache.timestamp < CACHE_TTL)) {
+    // console.log('Using cached active filename:', activeFilenameCache.name);
     return activeFilenameCache.name;
   }
 
@@ -17,12 +18,15 @@ async function getActiveFilename(): Promise<string> {
     const response = await fetch('/data/config.json', { cache: 'no-store' });
     if (response.ok) {
       const config = await response.json();
+      console.log('Loaded config:', config);
       const filename = config.activeFile || 'praisesongs_data.json';
       activeFilenameCache = { name: filename, timestamp: now };
       return filename;
+    } else {
+      console.warn('Config fetch failed:', response.status, response.statusText);
     }
   } catch (e) {
-    // Ignore error, use default
+    console.error('Error loading config:', e);
   }
   return 'praisesongs_data.json';
 }

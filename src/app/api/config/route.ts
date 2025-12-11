@@ -66,11 +66,14 @@ export async function POST(request: NextRequest) {
     try {
       await fs.access(filePath);
     } catch {
+      console.error('File not found for config:', filePath);
       return NextResponse.json({ error: 'File does not exist' }, { status: 404 });
     }
 
     // Save config
-    await fs.writeFile(CONFIG_FILE, JSON.stringify({ activeFile }, null, 2));
+    const configData = { activeFile };
+    console.log('Saving config to:', CONFIG_FILE, configData);
+    await fs.writeFile(CONFIG_FILE, JSON.stringify(configData, null, 2));
 
     return NextResponse.json({ success: true, activeFile });
   } catch (error) {
