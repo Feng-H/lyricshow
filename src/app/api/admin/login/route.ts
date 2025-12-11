@@ -3,6 +3,8 @@ import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 
+export const dynamic = 'force-dynamic';
+
 const ADMIN_CREDENTIALS = {
   username: 'huangfeng',
   password: '$2a$10$rOK9QzLQKN.W5rQRG/KhO.XqZYC6BQ9h.wZqBzxE.2J7g2K1m1O7C' // admin123

@@ -8,7 +8,7 @@ import { loadSongs, searchSongs } from '@/lib/data';
 import { Song } from '@/lib/types';
 import { Loading } from '@/components/ui/Loading';
 
-export default function HomePage() {
+export default function Home() {
   const searchParams = useSearchParams();
   const initialQuery = searchParams?.get('search') || '';
 
@@ -20,17 +20,21 @@ export default function HomePage() {
   useEffect(() => {
     async function fetchData() {
       try {
+        // Load songs from the default file
         const allSongs = await loadSongs();
         setSongs(allSongs);
 
         if (initialQuery) {
-          const results = await searchSongs(initialQuery);
+          const results = await searchSongs(initialQuery, 50);
           setFilteredSongs(results);
         } else {
           setFilteredSongs(allSongs);
         }
       } catch (error) {
         console.error('Failed to load songs:', error);
+        // Set empty state on error
+        setSongs([]);
+        setFilteredSongs([]);
       } finally {
         setLoading(false);
       }

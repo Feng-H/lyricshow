@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Song } from '@/lib/types';
-import { Languages, Share2, Print, Moon, Sun } from 'lucide-react';
+import { Languages, Share2, Printer, Moon, Sun } from 'lucide-react';
 import { copyToClipboard, getShareUrl } from '@/lib/utils';
 import { cn } from '@/lib/utils';
 
@@ -63,7 +63,7 @@ export function SongActions({ song, language, onLanguageChange }: SongActionsPro
         className="flex items-center space-x-2 px-3 py-1.5 text-sm border rounded-lg hover:bg-muted text-muted-foreground hover:text-foreground transition-colors"
         aria-label="Print song"
       >
-        <Print className="w-4 h-4" />
+        <Printer className="w-4 h-4" />
         <span>打印</span>
       </button>
     </div>

@@ -55,7 +55,7 @@ npm install
 cp ../praisesongs_data.json public/data/
 
 # 方式2：通过管理员界面上传（推荐）
-# 启动后访问 http://localhost:9090/admin
+# 启动后访问 http://localhost:3000/admin
 # 用户名：huangfeng，密码：admin123
 ```
 
@@ -66,7 +66,7 @@ npm run dev
 
 4. 访问开发环境
 ```
-http://localhost:9090
+http://localhost:3000
 ```
 
 ## 构建部署 | Build & Deploy
