@@ -15,10 +15,10 @@ async function getActiveFilename(): Promise<string> {
   }
 
   try {
-    const response = await fetch('/data/config.json', { cache: 'no-store' });
+    const response = await fetch('/api/data/config.json', { cache: 'no-store' });
     if (response.ok) {
       const config = await response.json();
-      console.log('Loaded config:', config);
+      console.log('Loaded config from API:', config);
       const filename = config.activeFile || 'praisesongs_data.json';
       activeFilenameCache = { name: filename, timestamp: now };
       return filename;
@@ -151,7 +151,7 @@ export async function loadSongs(filename?: string): Promise<Song[]> {
   }
 
   try {
-    const response = await fetch(`/data/${targetFile}`);
+    const response = await fetch(`/api/data/${targetFile}`, { cache: 'no-store' });
     if (!response.ok) {
       throw new Error(`Failed to load songs data from ${targetFile}`);
     }
