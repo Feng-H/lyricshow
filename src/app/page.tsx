@@ -17,7 +17,7 @@ function HomeContent() {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState<'grid' | 'directory'>('grid');
+  const [viewMode, setViewMode] = useState<'grid' | 'directory'>('directory');
 
   useEffect(() => {
     async function fetchData() {

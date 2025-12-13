@@ -7,8 +7,8 @@ interface SongDirectoryProps {
 
 export function SongDirectory({ songs }: SongDirectoryProps) {
   return (
-    <div className="space-y-2">
-      <div className="grid grid-cols-1 gap-2 text-sm">
+    <div className="space-y-1">
+      <div className="grid grid-cols-1 gap-1">
         {songs.map((song) => (
           <SongDirectoryItem key={song.id} song={song} />
         ))}
@@ -42,11 +42,11 @@ function SongDirectoryItem({ song }: { song: Song }) {
   return (
     <Link
       href={`/song/${song.id}`}
-      className="block hover:bg-muted/50 transition-colors p-3 rounded-md border border-transparent hover:border-border"
+      className="block hover:bg-muted/50 transition-colors py-2 px-3 rounded border border-transparent hover:border-border"
     >
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3">
         {/* Song Number */}
-        <span className="text-sm font-mono text-muted-foreground bg-muted px-2 py-1 rounded min-w-[3rem] text-center">
+        <span className="text-sm font-mono text-muted-foreground min-w-[2.5rem] text-center">
           #{song.id}
         </span>
 
