@@ -8,8 +8,8 @@ services:
     environment:
       - NODE_ENV=production
       - JWT_SECRET=bilingual-praise-songs-jwt-secret-key-change-in-production
-      - ADMIN_USERNAME=huangfeng
-      - ADMIN_PASSWORD=admin123
+      - ADMIN_USERNAME=changeyourusername
+      - ADMIN_PASSWORD=changeyourpassword
     restart: unless-stopped
     container_name: bilingual-praise-songs
     volumes:
