@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SongList } from '@/components/song/SongList';
+import { SongDirectory } from '@/components/song/SongDirectory';
 import { SearchBar } from '@/components/search/SearchBar';
 import { loadSongs, searchSongs } from '@/lib/data';
 import { Song } from '@/lib/types';
@@ -16,6 +17,7 @@ function HomeContent() {
   const [filteredSongs, setFilteredSongs] = useState<Song[]>([]);
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(true);
+  const [viewMode, setViewMode] = useState<'grid' | 'directory'>('grid');
 
   useEffect(() => {
     async function fetchData() {
@@ -79,11 +81,40 @@ function HomeContent() {
         </section>
 
         <section className="space-y-4">
-          <SearchBar
-            onSearch={handleSearch}
-            placeholder="搜索歌名、歌词或输入编号..."
-            initialValue={searchQuery}
-          />
+          <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
+            <div className="flex-1 w-full sm:flex-initial">
+              <SearchBar
+                onSearch={handleSearch}
+                placeholder="搜索歌名、歌词或输入编号..."
+                initialValue={searchQuery}
+              />
+            </div>
+
+            {/* View Mode Toggle */}
+            <div className="flex bg-muted rounded-lg p-1">
+              <button
+                onClick={() => setViewMode('grid')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'grid'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                网格
+              </button>
+              <button
+                onClick={() => setViewMode('directory')}
+                className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+                  viewMode === 'directory'
+                    ? 'bg-background text-foreground shadow-sm'
+                    : 'text-muted-foreground hover:text-foreground'
+                }`}
+              >
+                目录
+              </button>
+            </div>
+          </div>
+
           {searchQuery && (
             <p className="text-sm text-muted-foreground">
               找到 {filteredSongs.length} 首相关歌曲 | Found {filteredSongs.length} songs
@@ -94,8 +125,10 @@ function HomeContent() {
         <section>
           {loading ? (
             <Loading />
-          ) : (
+          ) : viewMode === 'grid' ? (
             <SongList songs={filteredSongs} />
+          ) : (
+            <SongDirectory songs={filteredSongs} />
           )}
         </section>
 
