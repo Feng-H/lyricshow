@@ -43,6 +43,7 @@ function SongDirectoryItem({ song }: { song: Song }) {
     <Link
       href={`/song/${song.id}`}
       className="block hover:bg-muted/50 transition-colors py-2 px-3 rounded border border-transparent hover:border-border"
+      data-song-id={song.id}
     >
       <div className="flex items-center gap-3">
         {/* Song Number */}

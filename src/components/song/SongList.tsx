@@ -17,7 +17,7 @@ export function SongList({ songs }: SongListProps) {
 
 function SongCard({ song }: { song: Song }) {
   return (
-    <Link href={`/song/${song.id}`} className="block">
+    <Link href={`/song/${song.id}`} className="block" data-song-id={song.id}>
       <div className="song-card group">
         <div className="flex items-start justify-between mb-2">
           <span className="text-xs font-medium text-muted-foreground bg-muted px-2 py-1 rounded">
