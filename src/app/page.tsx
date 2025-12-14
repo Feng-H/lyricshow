@@ -4,6 +4,7 @@ import { useState, useEffect, useMemo, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { SongList } from '@/components/song/SongList';
 import { SongDirectory } from '@/components/song/SongDirectory';
+import { SongRangeNavigation } from '@/components/song/SongRangeNavigation';
 import { SearchBar } from '@/components/search/SearchBar';
 import { loadSongs, searchSongs } from '@/lib/data';
 import { Song } from '@/lib/types';
@@ -18,6 +19,7 @@ function HomeContent() {
   const [searchQuery, setSearchQuery] = useState(initialQuery);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'grid' | 'directory'>('directory');
+  const [currentRange, setCurrentRange] = useState<{ start: number; end: number } | null>(null);
 
   useEffect(() => {
     async function fetchData() {
@@ -49,6 +51,8 @@ function HomeContent() {
     return async (query: string) => {
       setSearchQuery(query);
       setLoading(true);
+      // Reset current range when searching
+      setCurrentRange(null);
 
       try {
         if (query.trim()) {
@@ -65,8 +69,12 @@ function HomeContent() {
     };
   }, [songs]);
 
+  const handleRangeSelect = (startId: number, endId: number) => {
+    setCurrentRange({ start: startId, end: endId });
+  };
+
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className={`container mx-auto px-4 ${!searchQuery && !loading && songs.length > 0 ? 'pt-32' : 'py-8'}`}>
       <div className="max-w-4xl mx-auto space-y-8">
         <section className="text-center space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -121,6 +129,27 @@ function HomeContent() {
             </p>
           )}
         </section>
+
+        {/* Fixed Range Navigation - Only show when not searching and there are songs */}
+        {!searchQuery && !loading && songs.length > 0 && (
+          <div className="fixed top-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-sm border-b">
+            <div className="container mx-auto px-4 py-3">
+              <div className="max-w-4xl mx-auto">
+                <div className="text-center">
+                  <h3 className="text-sm font-medium text-muted-foreground mb-3">
+                    快速导航 | Quick Navigation
+                  </h3>
+                  <SongRangeNavigation
+                    totalSongs={songs.length}
+                    onRangeSelect={handleRangeSelect}
+                    currentStartId={currentRange?.start}
+                    currentEndId={currentRange?.end}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
 
         <section>
           {loading ? (
