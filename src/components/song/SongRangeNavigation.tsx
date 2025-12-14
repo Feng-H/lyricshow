@@ -49,10 +49,10 @@ export function SongRangeNavigation({
         <button
           key={`${start}-${end}`}
           onClick={() => handleRangeClick(start, end)}
-          className={`px-3 py-1.5 text-sm font-medium rounded-md transition-colors ${
+          className={`px-4 py-2 text-sm font-medium rounded-lg transition-all transform hover:scale-105 shadow-sm hover:shadow-md ${
             isActiveRange(start, end)
-              ? 'bg-primary text-primary-foreground'
-              : 'bg-muted text-muted-foreground hover:bg-muted/80 hover:text-foreground'
+              ? 'bg-primary text-primary-foreground ring-2 ring-primary/50 ring-offset-2'
+              : 'bg-muted/70 text-muted-foreground hover:bg-muted hover:text-foreground hover:ring-1 hover:ring-border/50'
           }`}
         >
           {start}-{end}
