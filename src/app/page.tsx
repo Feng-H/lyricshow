@@ -74,7 +74,7 @@ function HomeContent() {
   };
 
   return (
-    <div className={`container mx-auto px-4 ${!searchQuery && !loading && songs.length > 0 ? 'pt-52' : 'py-8'}`}>
+    <div className="container mx-auto px-4 py-8">
       <div className="max-w-4xl mx-auto space-y-8">
         <section className="text-center space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
@@ -130,29 +130,14 @@ function HomeContent() {
           )}
         </section>
 
-        {/* Fixed Range Navigation - Only show when not searching and there are songs */}
+        {/* Floating Range Navigation - Only show when not searching and there are songs */}
         {!searchQuery && !loading && songs.length > 0 && (
-          <div className="fixed top-0 left-0 right-0 z-50 bg-background/98 backdrop-blur-md border-b shadow-sm">
-            <div className="container mx-auto px-4 py-4">
-              <div className="max-w-4xl mx-auto">
-                <div className="text-center space-y-3">
-                  <div className="flex items-center justify-center gap-2">
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                    <h3 className="text-sm font-semibold text-foreground">
-                      快速导航 | Quick Navigation
-                    </h3>
-                    <div className="w-2 h-2 bg-primary rounded-full animate-pulse"></div>
-                  </div>
-                  <SongRangeNavigation
-                    totalSongs={songs.length}
-                    onRangeSelect={handleRangeSelect}
-                    currentStartId={currentRange?.start}
-                    currentEndId={currentRange?.end}
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
+          <SongRangeNavigation
+            totalSongs={songs.length}
+            onRangeSelect={handleRangeSelect}
+            currentStartId={currentRange?.start}
+            currentEndId={currentRange?.end}
+          />
         )}
 
         <section>
