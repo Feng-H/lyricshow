@@ -74,7 +74,7 @@ function HomeContent() {
   };
 
   return (
-    <div className={`container mx-auto px-4 ${!searchQuery && !loading && songs.length > 0 ? 'pt-40' : 'py-8'}`}>
+    <div className={`container mx-auto px-4 ${!searchQuery && !loading && songs.length > 0 ? 'pt-52' : 'py-8'}`}>
       <div className="max-w-4xl mx-auto space-y-8">
         <section className="text-center space-y-4">
           <h1 className="text-3xl md:text-4xl font-bold text-foreground">
